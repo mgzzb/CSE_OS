@@ -12,14 +12,14 @@
 
 int main( const int argc, const char* argv[] ){
 
-	// If argc not equal to zero enter for loop
+	// If argc less than 2, enter for loop
 	if (argc < 2) {
 		// Print error and exit program
 		fprintf(stdout, "Error, you did not enter a file name.\n");
 		exit(EXIT_FAILURE);
 	}
 
-	// If argc is greater than 3
+	// If argc is greater than 3, enter for loop
 	if (argc > 3) {
 		// Print error and exit program
 		fprintf(stdout, "Error, you entered the wrong number of inputs. Please enter 3.\n");
