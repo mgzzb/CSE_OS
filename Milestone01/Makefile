@@ -8,4 +8,4 @@ bytecheck: bytecheck.c
 	$(CC) $(CFLAGS) -o bytecheck bytecheck.c
 
 clean:
-	rm *.o 
+	rm -rf *.o bytecheck

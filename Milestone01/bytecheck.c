@@ -36,7 +36,7 @@ int main( const int argc, const char* argv[] ){
 	}
 
 	// Check if argv[2] is not a hexadecimal value
-	if (argv[2][0] != '0' | argv[2][1] != 'x') {
+	if ( (argv[2][0] != '0') | (argv[2][1] != 'x')) {
 		// Print error and exit program
 		fprintf(stdout, "Error, you did not enter a hexadecimal value.\n");
 		exit(EXIT_FAILURE);	
@@ -77,10 +77,10 @@ int main( const int argc, const char* argv[] ){
 	rewind(inputFile);
 
 	// Create a buffer using malloc
-	char *buffer = malloc(fileSize + 1);
+	//char *buffer = malloc(fileSize + 1);
 
 	// Use fread to go through the file and read the contents
-	fread(buffer, fileSize, 1, inputFile);
+	//fread(buffer, fileSize, 1, inputFile);
 
 	// Check if fread fails
 	if (ferror(inputFile)) {
@@ -92,16 +92,26 @@ int main( const int argc, const char* argv[] ){
 	// Initialize byteCount to zero
 	int byteCount = 0;
 
-	// Loop through buffer to check how many
-	for (int charCheck = 0; charCheck < fileSize + 1; charCheck++) {
+	long int num =0;
+	num = strtol( argv[2], 0, 0);
 
-		// Check if current character in buffer is equal to hex value
-		if (buffer[charCheck] == argv[2]) {
-			// Increase byte count
-			byteCount += 1;
+	// Loop through buffer to check how many
+	do
+    {
+        // Taking input single character at a time
+        char c = fgetc(inputFile);
+
+        // Checking for end of file
+        if (feof(inputFile)){
+			break;
+		}
+ 
+		if(c == (char)num){
+			byteCount +=1;
 		}
 
-	}
+    }  while(1);
+	
 
 	// Close the file
 	fclose(inputFile);
