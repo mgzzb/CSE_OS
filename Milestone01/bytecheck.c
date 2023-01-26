@@ -67,8 +67,8 @@ int main( const int argc, const char* argv[] ){
 	fseek(inputFile, 0L, SEEK_END);
 	long int fileSize = ftell(inputFile);
 
-	// Check if file size is greater than 25 kB (25,600 bytes)
-	if (fileSize > 25600) {
+	// Check if file size is greater than 25 kB (25,000 bytes)
+	if (fileSize > 25000) {
 		// Print error and exit program
 		fprintf(stdout, "Error: The file is over 25 kB (file size was %ld)", fileSize);
 	    exit(EXIT_FAILURE);
@@ -95,7 +95,7 @@ int main( const int argc, const char* argv[] ){
 
 	// Initialize a long int and use strtol to convert the initial part of the hex value string to a long int 0
 	long int hexVal = 0;
-	hexVal = strtol( argv[2], 0, 0);
+	hexVal = strtol(argv[2], 0, 0);
 
 	// Loop through the entire file to check the characters
 	for (int charCheck = 0; charCheck < fileSize + 1; charCheck++) {
@@ -113,6 +113,7 @@ int main( const int argc, const char* argv[] ){
 	// Print the final byte count
 	fprintf(stdout, "%d\n", byteCount);
 	
+	// Return EXIT_SUCCESS
 	return EXIT_SUCCESS;
 
 }
