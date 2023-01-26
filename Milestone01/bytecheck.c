@@ -8,9 +8,10 @@
     Count how often a particular byte value occurs in a file    
  **********************************/
 
+// Include required libraries
 #include <stdlib.h>
 #include <stdio.h>
-#include<unistd.h>
+#include <unistd.h>
 
 int main( const int argc, const char* argv[] ){
 
@@ -92,19 +93,20 @@ int main( const int argc, const char* argv[] ){
 	// Initialize byteCount to zero
 	int byteCount = 0;
 
-	long int num =0;
-	num = strtol( argv[2], 0, 0);
+	// Initialize a long int and use strtol to convert the initial part of the hex value string to a long int 0
+	long int hexVal = 0;
+	hexVal = strtol( argv[2], 0, 0);
 
+	// Loop through the entire file to check the characters
 	for (int charCheck = 0; charCheck < fileSize + 1; charCheck++) {
 	
 		// Check if current character in buffer is equal to hex value
-		if (buffer[charCheck] == num) {
+		if (buffer[charCheck] == hexVal) {
 			// Increase byte count
 			byteCount += 1;
 		}
 	}
 	
-
 	// Close the file
 	fclose(inputFile);
 
