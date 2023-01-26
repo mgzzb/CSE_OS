@@ -77,10 +77,10 @@ int main( const int argc, const char* argv[] ){
 	rewind(inputFile);
 
 	// Create a buffer using malloc
-	//char *buffer = malloc(fileSize + 1);
+	char *buffer = malloc(fileSize + 1);
 
 	// Use fread to go through the file and read the contents
-	//fread(buffer, fileSize, 1, inputFile);
+	fread(buffer, fileSize, 1, inputFile);
 
 	// Check if fread fails
 	if (ferror(inputFile)) {
@@ -95,22 +95,14 @@ int main( const int argc, const char* argv[] ){
 	long int num =0;
 	num = strtol( argv[2], 0, 0);
 
-	// Loop through buffer to check how many
-	do
-    {
-        // Taking input single character at a time
-        char c = fgetc(inputFile);
-
-        // Checking for end of file
-        if (feof(inputFile)){
-			break;
+	for (int charCheck = 0; charCheck < fileSize + 1; charCheck++) {
+	
+		// Check if current character in buffer is equal to hex value
+		if (buffer[charCheck] == num) {
+			// Increase byte count
+			byteCount += 1;
 		}
- 
-		if(c == (char)num){
-			byteCount +=1;
-		}
-
-    }  while(1);
+	}
 	
 
 	// Close the file
