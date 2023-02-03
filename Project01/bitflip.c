@@ -4,6 +4,9 @@
  * File Name: bitflip.c
  * Date Created: Jan 26, 2023
  * File Contents:
+    Level 1: Given a file within a certain size limit (default of 25 kB or 
+    specified via argument), output a bit-flipped version of the file with an appended 
+    extension (.bf).   
     Level 2: Given a file within a certain size limit (25 kB or specified), 
     output a bit-flipped and reverse byte-ordered file with an appended extension (.rbf 
     or .r).
@@ -34,10 +37,16 @@ void maxSizeCheck(FILE* inputFile, int maximumFileSize) {
 	fseek(inputFile, 0L, SEEK_END);
 	long int fileSize = ftell(inputFile);
 
+    // Check if file size is greater than 25 kB (25,000 bytes)
+    if (fileSize > 25000) {
+        // Print error and exit program
+        fprintf(stdout, "Error: The file is over 25 kB (file size was %ld)\n", fileSize);
+        exit(EXIT_FAILURE);
+    }
 	// Check if file size is greater than maximum size
 	if (fileSize > maximumFileSize) {
 		// Print error and exit program
-		fprintf(stdout, "Error: The file is over the maximum file size of %d (file size was %ld)", maximumFileSize, fileSize);
+		fprintf(stdout, "Error: The file is over the maximum file size of %d (file size was %ld)\n", maximumFileSize, fileSize);
 	    exit(EXIT_FAILURE);
 	}
 
@@ -251,10 +260,10 @@ int main(int argc, char *argv[]) {
     // Initialize file count to 0
     int fileCount = 0;
 
-    // Initialize boolean to check whether it's a normal flip
-    bool normalFlip = true;
+    int maximumFileSize = 25000;
 
-    // Initialize boolean to see whether file name override is true
+    // Initialize booleans to check for functions
+    char * flip = "normal";
     bool override = false;
 
     // Check if there is more than one argument
@@ -263,26 +272,7 @@ int main(int argc, char *argv[]) {
 	    fprintf(stdout, "Error: Please enter more than one argument\n");
 	    exit(EXIT_FAILURE);
     }
-
-    // Store the input file name
-    inputFileName = argv[argIndex];
-                
-    // Create a file pointer and store it
-	FILE* inputFile = fopen(inputFileName, "r");
-
-    // Check if file exists
-	if (inputFile == NULL) {
-		// Print error and exit program
-	    fprintf(stdout, "Error: File does not exist\n");
-	    exit(EXIT_FAILURE);
-	}
-
-	// Check if file is readable
-	if (access(inputFileName, R_OK ) == -1) {
-		// Print error and exit program
-		fprintf(stdout, "Error: File is not readable\n");
-		exit(EXIT_FAILURE);
-	}
+    
 
     /* While loop to set up the different flag values depending on the user input */
     while (argIndex < argc) {
@@ -298,6 +288,9 @@ int main(int argc, char *argv[]) {
                 fprintf(stdout, "Error: More than two files entered\n");
                 exit(EXIT_FAILURE);
             }
+
+            // Store the input file name
+            inputFileName = argv[argIndex];
 
         }
 
@@ -344,7 +337,7 @@ int main(int argc, char *argv[]) {
                 else if (argv[argIndex + 1] != NULL) {
 
                     // Get maximum size which is the argument after -maxsize flag
-                    int maximumFileSize = atoi(argv[argIndex + 1]);
+                    maximumFileSize = atoi(argv[argIndex + 1]);
 
                     // Check if maximum size is positive
                     if (maximumFileSize <= 0) {
@@ -352,24 +345,16 @@ int main(int argc, char *argv[]) {
                         fprintf(stdout, "Error: The maximum file size entered must be positive\n");
                         exit(EXIT_FAILURE);
                     }
-
-                    // *** MISSING: FIX THIS FUNCTION BECAUSE IT CAUSES SEG FAULT!!! ***
-                    // Call specific function
-                    maxSizeCheck(inputFile, maximumFileSize);
                 }
             } else if (strcmp(arg, "-bfr") == 0) {
 
-                // Update normalFlip boolean
-                normalFlip = false;
-                // Call specific function
-                bitFlipReverse(inputFileName, inputFile, override, overrideFileName);
+                // Update flip to bfr
+                flip = "bfr";
 
             } else if (strcmp(arg, "-r") == 0) {
 
-                // Update normalFlip boolean
-                normalFlip = false;
-                // Call specific function
-                reverse(inputFileName, inputFile, override, overrideFileName);
+                // Update flip to r
+                flip = "r";
 
             } else {
                 // Show message to use -help argument and exit
@@ -384,6 +369,25 @@ int main(int argc, char *argv[]) {
     
     }
 
+    // Create a file pointer and store it
+    FILE* inputFile = fopen(inputFileName, "r");
+
+    // Check if file exists
+    if (inputFile == NULL) {
+        // Print error and exit program
+        fprintf(stdout, "Error: File does not exist\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // Check if file is readable
+    if (access(inputFileName, R_OK ) == -1) {
+        // Print error and exit program
+        fprintf(stdout, "Error: File is not readable\n");
+        exit(EXIT_FAILURE);
+    }
+
+    maxSizeCheck(inputFile, maximumFileSize);
+
     // Check if the file count is 0
     if (fileCount == 0) {
         // Show error message and exit
@@ -392,7 +396,14 @@ int main(int argc, char *argv[]) {
     }
 
     // Check if normalFlip boolean is true to call the bitflip function
-    if (normalFlip == true) {
+    if ( strcmp(flip,"r") == 0 ){
+        // Call specific function
+        reverse(inputFileName, inputFile, override, overrideFileName);
+    }else if( strcmp(flip,"rbf") == 0 ){
+        // Call specific function
+        bitFlipReverse(inputFileName, inputFile, override, overrideFileName);
+
+    }else{
         bitFlip(inputFileName, inputFile, override, overrideFileName);
     }
 
