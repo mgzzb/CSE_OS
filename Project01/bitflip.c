@@ -26,11 +26,9 @@ void usage() {
     exit(EXIT_SUCCESS);
 }
 
-/*
-// *** MISSING: FIX THIS FUNCTION BECAUSE IT CAUSES SEG FAULT!!! ***
+
 //Function to check max size
 void maxSizeCheck(FILE* inputFile, int maximumFileSize) {
-
 
     // Obtain and store size of file
 	fseek(inputFile, 0L, SEEK_END);
@@ -47,16 +45,19 @@ void maxSizeCheck(FILE* inputFile, int maximumFileSize) {
 	rewind(inputFile);
 
 }
-*/
 
-/*
-// *** MISSING: ADD THE FUNCTIONALITY FOR REGULAR BIT FLIP ***
-void bitFlip(const char * inputFileName, FILE * inputFile, boolean override, const char * overrideFileName) {
 
-    // Initialize new file pointer
-    FILE * newFile;
+void bitFlip( char * inputFileName, FILE * inputFile, bool override, char * overrideFileName ) {
     
-    // *** MISSING: EDIT CODE FROM BELOW IS THE READ FROM MILESTONE 01 ***
+    fseek(inputFile, 0L, SEEK_END);
+
+    long int fileSize = ftell(inputFile);
+
+    fseek(inputFile, 0, SEEK_SET);
+    
+    // Initialize new file pointer
+    FILE* newFile;
+    
     // Create a buffer using malloc
 	char *buffer = malloc(fileSize + 1);
 
@@ -69,10 +70,9 @@ void bitFlip(const char * inputFileName, FILE * inputFile, boolean override, con
     	fprintf(stdout, "Error: Could not read the file\n");
 		exit(EXIT_FAILURE);
   	}
-    /// ----------------- STOPS CODE FROM MILESTONE 01 --------
 
-    // Initialize newFileName
-    const char * newFileName = NULL;
+    // Initiali ze newFileName
+    char * newFileName = NULL;
 
     // Check override variable to see if it is true
     if (override == true) {
@@ -85,7 +85,7 @@ void bitFlip(const char * inputFileName, FILE * inputFile, boolean override, con
     }
 
     // Use new file name and concatenate with .bf extension
-    strcat(newFileName, '.bf')
+    strcat(newFileName, ".bf");
 
     // Open new file
     newFile = fopen(newFileName, "w");
@@ -93,29 +93,35 @@ void bitFlip(const char * inputFileName, FILE * inputFile, boolean override, con
     // Check if file couldn't be made
     if (newFile == NULL) {
         // Show error message and exit
-        fprintf("Error: unable to create file\n");
+        printf("Error: unable to create file\n");
         exit(EXIT_FAILURE);
     }
-
-    // *** MISSING: ADD MANIPULATION OF DATA TO DO BIT FLIP (WHAT'S BELOW WAS GIVEN TO BITFLIP IN INSTRUCTIONS) ***
-    char byValue; 
-    byValue = 0xC1; 
-    byValue = byValue ^ 0xFF; 
-    printf(“Comparing the toggled values: %02X vs. %02X\n”, byValue, byValue ^ 0xFF);
+    
+    // Loop through the entire file to replace the characters
+	for (int charReplace = 0; charReplace < fileSize ; charReplace++) {
+	
+		// write the Bitflip in new file
+        buffer[charReplace] ^= 0xFF;
+        fwrite(&buffer[charReplace], sizeof(char), 1, newFile);
+        
+	} 
     
     // Close the new file
     fclose(newFile); 
 
-}*/
+}
 
-/*
-// *** MISSING: ADD THE FUNCTIONALITY FOR THE BIT FLIP AND REVERSE ***
-void bitFlipReverse(const char * inputFileName, FILE * inputFile) {
+void bitFlipReverse( char * inputFileName, FILE * inputFile, bool override, char * overrideFileName ) {
 
+    fseek(inputFile, 0L, SEEK_END);
+
+    long int fileSize = ftell(inputFile);
+
+    fseek(inputFile, 0, SEEK_SET);
+    
     // Initialize new file pointer
-    FILE * newFile;
+    FILE* newFile;
     
-    // *** MISSING: EDIT CODE FROM BELOW IS THE READ FROM MILESTONE 01 ***
     // Create a buffer using malloc
 	char *buffer = malloc(fileSize + 1);
 
@@ -128,10 +134,9 @@ void bitFlipReverse(const char * inputFileName, FILE * inputFile) {
     	fprintf(stdout, "Error: Could not read the file\n");
 		exit(EXIT_FAILURE);
   	}
-    /// ----------------- STOPS CODE FROM MILESTONE 01 --------
 
     // Initialize newFileName
-    const char * newFileName = NULL;
+    char * newFileName = NULL;
 
     // Check override variable to see if it is true
     if (override == true) {
@@ -143,8 +148,9 @@ void bitFlipReverse(const char * inputFileName, FILE * inputFile) {
         newFileName = inputFileName;
     }
 
-    // Use new file name and concatenate with .bfr extension
-    strcat(newFileName, '.bfr')
+
+    // Use new file name and concatenate with .bf extension
+    strcat(newFileName, ".bfr");
 
     // Open new file
     newFile = fopen(newFileName, "w");
@@ -152,25 +158,35 @@ void bitFlipReverse(const char * inputFileName, FILE * inputFile) {
     // Check if file couldn't be made
     if (newFile == NULL) {
         // Show error message and exit
-        fprintf("Error: unable to create file\n");
+        printf("Error: unable to create file\n");
         exit(EXIT_FAILURE);
     }
-
-    // *** MISSING: ADD MANIPULATION OF DATA TO DO BIT FLIP AND REVERSE ***
-
+    
+    // Loop through the entire file to replace the characters
+	for (int charReplace = fileSize - 1 ; charReplace  >= 0; charReplace--) {
+	
+		// write the Bitflip in new file
+        buffer[charReplace] ^= 0xFF;
+        fwrite(&buffer[charReplace], sizeof(char), 1, newFile);
+        
+	} 
+    
     // Close the new file
-    fclose(newFile);
+    fclose(newFile); 
 
-}*/
+}
 
-/*
-// *** MISSING: ADD THE FUNCTIONALITY FOR THE REVERSE ***
-void reverse(const char * inputFileName, FILE * inputFile) {
+
+void reverse( char * inputFileName, FILE * inputFile, bool override, char * overrideFileName ) {
+    fseek(inputFile, 0L, SEEK_END);
+
+    long int fileSize = ftell(inputFile);
+
+    fseek(inputFile, 0, SEEK_SET);
     
-     // Initialize new file pointer
-    FILE * newFile;
+    // Initialize new file pointer
+    FILE* newFile;
     
-    // *** MISSING: EDIT CODE FROM BELOW IS THE READ FROM MILESTONE 01 ***
     // Create a buffer using malloc
 	char *buffer = malloc(fileSize + 1);
 
@@ -183,10 +199,9 @@ void reverse(const char * inputFileName, FILE * inputFile) {
     	fprintf(stdout, "Error: Could not read the file\n");
 		exit(EXIT_FAILURE);
   	}
-    /// ----------------- STOPS CODE FROM MILESTONE 01 --------
 
     // Initialize newFileName
-    const char * newFileName = NULL;
+    char * newFileName = NULL;
 
     // Check override variable to see if it is true
     if (override == true) {
@@ -198,8 +213,8 @@ void reverse(const char * inputFileName, FILE * inputFile) {
         newFileName = inputFileName;
     }
 
-    // Use new file name and concatenate with .r extension
-    strcat(newFileName, '.r')
+    // Use new file name and concatenate with .bf extension
+    strcat(newFileName, ".r");
 
     // Open new file
     newFile = fopen(newFileName, "w");
@@ -207,20 +222,29 @@ void reverse(const char * inputFileName, FILE * inputFile) {
     // Check if file couldn't be made
     if (newFile == NULL) {
         // Show error message and exit
-        fprintf("Error: unable to create file\n");
+        printf("Error: unable to create file\n");
         exit(EXIT_FAILURE);
     }
-
-    // *** MISSING: ADD MANIPULATION OF DATA TO DO REVERSE ***
-
+    
+    // Loop through the entire file to replace the characters
+	for (int charReplace = fileSize - 1 ; charReplace  >= 0; charReplace--) {
+		// write reverse order in new file
+        fwrite(&buffer[charReplace], sizeof(char), 1, newFile);
+        
+	} 
+    
     // Close the new file
-    fclose(newFile);
+    fclose(newFile); 
 
-}*/
+}
 
 /* Main Execution */
 int main(int argc, char *argv[]) {
 
+    // Set up Files
+    char * inputFileName = NULL;
+    char * overrideFileName = NULL;
+ 
     // Initialize argument index at 1
     int argIndex = 1;
 
@@ -240,60 +264,39 @@ int main(int argc, char *argv[]) {
 	    exit(EXIT_FAILURE);
     }
 
+    // Store the input file name
+    inputFileName = argv[argIndex];
+                
+    // Create a file pointer and store it
+	FILE* inputFile = fopen(inputFileName, "r");
+
+    // Check if file exists
+	if (inputFile == NULL) {
+		// Print error and exit program
+	    fprintf(stdout, "Error: File does not exist\n");
+	    exit(EXIT_FAILURE);
+	}
+
+	// Check if file is readable
+	if (access(inputFileName, R_OK ) == -1) {
+		// Print error and exit program
+		fprintf(stdout, "Error: File is not readable\n");
+		exit(EXIT_FAILURE);
+	}
+
     /* While loop to set up the different flag values depending on the user input */
     while (argIndex < argc) {
 
         // Find the file name
         if ((strchr(argv[argIndex], '.')) != NULL) {
-
             // Increase file count
             fileCount += 1;
-
-            if (fileCount == 1) {
-
-                // Store the input file name
-                const char * inputFileName = argv[argIndex];
-                
-                // Create a file pointer and store it
-	            FILE* inputFile = fopen(inputFileName, "r");
-
-                // Check if file exists
-	            if (inputFile == NULL) {
-		            // Print error and exit program
-	                fprintf(stdout, "Error: File does not exist\n");
-	                exit(EXIT_FAILURE);
-	            }
-
-	            // Check if file is readable
-	            if (access(inputFileName, R_OK ) == -1) {
-		            // Print error and exit program
-		            fprintf(stdout, "Error: File is not readable\n");
-		            exit(EXIT_FAILURE);
-	            }
-
-            }
 
             // Check if there are more than two files in arguments
             if (fileCount > 2) {
                 // Show error message and exit
                 fprintf(stdout, "Error: More than two files entered\n");
                 exit(EXIT_FAILURE);
-            }
-
-            // Check if file count is greater than 1
-            else if (fileCount > 1) {
-                // Store the output file
-                const char * overrideFileName = argv[argIndex];
-
-                // Use access function to check if file exists
-                if (access(overrideFileName, F_OK) == 0) {
-                    // Since file to be overwritten exists, show error message and exit
-                    fprintf(stdout, "Error: An already existing file would be overwritten, please enter another file name\n");
-                    exit(EXIT_FAILURE);
-                }
-                // *** MISSING: FPRINTF BELOW IS FOR ERROR CHECKING, REMOVE ONCE OUTPUTFILE IS USED !!! ***
-                fprintf(stdout, "Override output file name: %s\n", overrideFileName);
-
             }
 
         }
@@ -316,6 +319,18 @@ int main(int argc, char *argv[]) {
                     fprintf(stdout, "Error: Please enter the desired new file name after -o\n");
                     exit(EXIT_FAILURE);
                 }
+                
+                // Store the output file
+                overrideFileName = argv[argIndex+1];
+
+                // Use access function to check if file exists
+                if (access(overrideFileName, F_OK) == 0) {
+                    // Since file to be overwritten exists, show error message and exit
+                    fprintf(stdout, "Error: An already existing file would be overwritten, please enter another file name\n");
+                    exit(EXIT_FAILURE);
+                }
+                // *** MISSING: FPRINTF BELOW IS FOR ERROR CHECKING, REMOVE ONCE OUTPUTFILE IS USED !!! ***
+                fprintf(stdout, "Override output file name: %s\n", overrideFileName);
 
                 // Set override boolean to true
                 override = true;
@@ -340,21 +355,21 @@ int main(int argc, char *argv[]) {
 
                     // *** MISSING: FIX THIS FUNCTION BECAUSE IT CAUSES SEG FAULT!!! ***
                     // Call specific function
-                    //maxSizeCheck(inputFile, maximumFileSize);
+                    maxSizeCheck(inputFile, maximumFileSize);
                 }
             } else if (strcmp(arg, "-bfr") == 0) {
 
                 // Update normalFlip boolean
                 normalFlip = false;
                 // Call specific function
-                //bitFlipReverse(inputFileName, inputFile, override, overrideFileName);
+                bitFlipReverse(inputFileName, inputFile, override, overrideFileName);
 
             } else if (strcmp(arg, "-r") == 0) {
 
                 // Update normalFlip boolean
                 normalFlip = false;
                 // Call specific function
-                //reverse(inputFileName, inputFile, override, overrideFileName);
+                reverse(inputFileName, inputFile, override, overrideFileName);
 
             } else {
                 // Show message to use -help argument and exit
@@ -378,11 +393,11 @@ int main(int argc, char *argv[]) {
 
     // Check if normalFlip boolean is true to call the bitflip function
     if (normalFlip == true) {
-        //bitFlip(inputFileName, inputFile, override, overrideFileName);
+        bitFlip(inputFileName, inputFile, override, overrideFileName);
     }
 
     // Close the input file
-    //fclose(inputFile);
+    fclose(inputFile);
 
     // Return exit success
     return EXIT_SUCCESS;
