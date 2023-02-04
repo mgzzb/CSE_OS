@@ -80,17 +80,17 @@ void bitFlip( char * inputFileName, FILE * inputFile, bool override, char * over
 		exit(EXIT_FAILURE);
   	}
 
-    // Initiali ze newFileName
-    char * newFileName = NULL;
+    // Initialize newFileName
+    char * newFileName = malloc(fileSize+4+1);
 
     // Check override variable to see if it is true
     if (override == true) {
         // Set new file name to the override file name
-        newFileName = overrideFileName;
+        strcpy(newFileName, overrideFileName);
     }
     else {
         // Set new file name to original input file name
-        newFileName = inputFileName;
+        strcpy(newFileName, inputFileName);
     }
 
     // Use new file name and concatenate with .bf extension
@@ -104,7 +104,7 @@ void bitFlip( char * inputFileName, FILE * inputFile, bool override, char * over
         printf("Error: File %s already exists!\n", newFileName);
         exit(EXIT_FAILURE);
     }
-    
+
     // Open new file to write
     newFile = fopen(newFileName, "w");
 
@@ -123,7 +123,10 @@ void bitFlip( char * inputFileName, FILE * inputFile, bool override, char * over
         fwrite(&buffer[charReplace], sizeof(char), 1, newFile);
         
 	} 
-    
+
+    printf("Input: %s was %ld bytes\n", inputFileName,  fileSize);
+    printf("Output: %s was output successfully (bitflip)\n", newFileName);
+
     // Close the new file
     fclose(newFile); 
 
@@ -154,16 +157,16 @@ void bitFlipReverse( char * inputFileName, FILE * inputFile, bool override, char
   	}
 
     // Initialize newFileName
-    char * newFileName = NULL;
+    char * newFileName = malloc(fileSize+4+1);
 
     // Check override variable to see if it is true
     if (override == true) {
         // Set new file name to the override file name
-        newFileName = overrideFileName;
+        strcpy(newFileName, overrideFileName);
     }
     else {
         // Set new file name to original input file name
-        newFileName = inputFileName;
+        strcpy(newFileName, inputFileName);
     }
 
 
@@ -196,6 +199,9 @@ void bitFlipReverse( char * inputFileName, FILE * inputFile, bool override, char
         fwrite(&buffer[charReplace], sizeof(char), 1, newFile);
         
 	} 
+
+    printf("Input: %s was %ld bytes\n", inputFileName,  fileSize);
+    printf("Output: %s was output successfully (bitflip, reverse)\n", newFileName);
     
     // Close the new file
     fclose(newFile); 
@@ -227,16 +233,16 @@ void reverse( char * inputFileName, FILE * inputFile, bool override, char * over
   	}
 
     // Initialize newFileName
-    char * newFileName = NULL;
+    char * newFileName = malloc(fileSize+4+1);
 
     // Check override variable to see if it is true
     if (override == true) {
         // Set new file name to the override file name
-        newFileName = overrideFileName;
+        strcpy(newFileName, overrideFileName);
     }
     else {
         // Set new file name to original input file name
-        newFileName = inputFileName;
+        strcpy(newFileName, inputFileName);
     }
 
     // Use new file name and concatenate with .bf extension
@@ -266,6 +272,10 @@ void reverse( char * inputFileName, FILE * inputFile, bool override, char * over
         fwrite(&buffer[charReplace], sizeof(char), 1, newFile);
         
 	} 
+
+    printf("Input: %s was %ld bytes\n", inputFileName,  fileSize);
+    printf("Output: %s was output successfully (reverse)\n", newFileName);
+
     
     // Close the new file
     fclose(newFile); 
@@ -425,7 +435,7 @@ int main(int argc, char *argv[]) {
         // Call specific function
         reverse(inputFileName, inputFile, override, overrideFileName);
 
-    }else if( strcmp(flip,"rbf") == 0 ){
+    }else if( strcmp(flip,"bfr") == 0 ){
         // Call specific function
         bitFlipReverse(inputFileName, inputFile, override, overrideFileName);
 
