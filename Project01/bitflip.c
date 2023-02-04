@@ -96,7 +96,16 @@ void bitFlip( char * inputFileName, FILE * inputFile, bool override, char * over
     // Use new file name and concatenate with .bf extension
     strcat(newFileName, ".bf");
 
-    // Open new file
+    // Open new file to read
+    newFile = fopen(newFileName, "r");
+
+    // check if file existed already 
+    if(newFile != NULL){
+        printf("Error: File %s already exists!\n", newFileName);
+        exit(EXIT_FAILURE);
+    }
+    
+    // Open new file to write
     newFile = fopen(newFileName, "w");
 
     // Check if file couldn't be made
@@ -161,7 +170,15 @@ void bitFlipReverse( char * inputFileName, FILE * inputFile, bool override, char
     // Use new file name and concatenate with .bf extension
     strcat(newFileName, ".bfr");
 
-    // Open new file
+    // Open new file to read
+    newFile = fopen(newFileName, "r");
+
+    // check if file existed already 
+    if(newFile != NULL){
+        printf("Error: File %s already exists!\n", newFileName);
+        exit(EXIT_FAILURE);
+    }
+    // Open new file to write
     newFile = fopen(newFileName, "w");
 
     // Check if file couldn't be made
@@ -225,7 +242,15 @@ void reverse( char * inputFileName, FILE * inputFile, bool override, char * over
     // Use new file name and concatenate with .bf extension
     strcat(newFileName, ".r");
 
-    // Open new file
+    // Open new file to read
+    newFile = fopen(newFileName, "r");
+
+    // check if file existed already 
+    if(newFile != NULL){
+        printf("Error: File %s already exists!\n", newFileName);
+        exit(EXIT_FAILURE);
+    }
+
     newFile = fopen(newFileName, "w");
 
     // Check if file couldn't be made
@@ -399,6 +424,7 @@ int main(int argc, char *argv[]) {
     if ( strcmp(flip,"r") == 0 ){
         // Call specific function
         reverse(inputFileName, inputFile, override, overrideFileName);
+
     }else if( strcmp(flip,"rbf") == 0 ){
         // Call specific function
         bitFlipReverse(inputFileName, inputFile, override, overrideFileName);

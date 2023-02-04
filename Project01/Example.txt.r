@@ -1,1 +1,29 @@
-õõİÑš—˜–—ß—œŠ’ßŒ–ß†“Œßš˜š‰ßš—‹ß›‘ßÓÏÏÏÓÏÏÌÛõß†“š‘ß‹ß›š‹‘Š’ßÎÍÏÍß‘–ß‹š—“¾ß‹ß†“Œß–›š’ßš—«ßÑ‘–‹Œ‘š’œßšš†“’šõßš‰–ŒŒšœ‡šßŒŒš››ß‹ß†‹–‘Šßš—‹ßš”‹ßŒ“ß›“Š—Œß‹‘š’š˜‘’ßÓ†“‹‘‹’¶õõß¢ÑÑÑ¤ßÑš—‹Š™ß˜ß‹ß›šš‘ß““–ˆß‹‘š’š˜‘’ß†“š‹’–‹“ªßÑÍÍÏÍß™ß—‹ˆ˜ß‹‘Šœ›š—õß˜‘‹Œß†š‰ßš—‹ßšŒš‰šß‘š‰šß‹‘ßŒš›ß‹–ß‹ŠßÓ‘–‹œš–›ß‹—˜–ßš—‹ß‘–ßš‹ŒßßŒ–ßŒ•õßÏÏÏÓÍÎß‹Šœß‹ß‘–Œ–œš›ßš—«İßÓŒ››ß‘—·ßÑ–—œ–¯ß‹ßš‹‹š“ß‹Œš‹“ßš—‹ß‘–ß›–Œßš—ßİÓš‘“õßÍÍÏÍß™ßŒ—‹‘’ßš‘–‘ß‹Œ–™ßš—‹ß‘–ß›š››ßššˆßÏÏÏÓÏÌßš‰ß—œ–—ˆß™ßÓŒšš†“’šßÏÏÏÓÏÏÎßš‰õß˜‘–››ßÓ‹‘Šœ›š—ßŒ‹–ß›š“Š›ß‘—‹ßš’ßŒ—ß‹š—“¾ß¢‹‘šßš“˜¸¤ßÓŒš†ßš‰–™ß‹Œ“ßš—‹õßš‰°İßÑ‹‘š’š˜‘’ß–‘šŒß†ß‘š”‹ß‘–‹œßœ–‹’›ßš’ß‘š‰šßššŒß‹ßŒ‹‘ˆßˆ‘ß¶¼«ß‹ß‘—·õõßÑŒ‹–™ß˜‘–”‘–—Œß›‘ßŒš“Œß˜‘–ˆ“Œß‹ßšŠ›ßšŠŒŒšßš›‘Šßˆ‘ßŒ–ß‹–õß›‘ßÓš’š‹š¬ß™ß›‘šßš—‹ß‹ßÏÏÏÓÈÇÎß†“š‘ß‹ßÏÍÏÍß‘–ßÏÏÏÓÏÍÎß’™ß‹‘šˆßšœ™”ˆõßŒØš“˜¸ßÑŒŒš‘–ŒŠß˜‘–Œ“ß›š”Œ–ß˜‘––—ß‹‘ß‹—‹ßŒš“˜¸ß™ß˜‘–‹šš’ß““—ß‘ˆ‹ßß›“‹õßš—ßÓ†›š‹Œš¦ßİÑ†›‹ßšœ™ßšˆßš‘ßš—‹ß‹ß†‹–“šßœ–’‘œšß‹‘šš™™–›İßß™ßœ–’š›‘ßš—‹õß˜‘–Š›ß†“–‰š—ß›š–—ß‹–ßšŒŠœšß›š‹ßšß‹ßššˆßŒšš†“’šßŒ‹–ß™ßÏÏÏÓÍÎß‹—‹ß›š’–™‘œõß”ššˆß‹Œ“ß–—œ–¯ß›‘Š¬ß‹ŠßÓ‹‘–ß‹’ßßŒ–ß‹‘ßß›‘Š¹ß¶¼«ß‹ß›š‘š‹Œ–“ßš“˜¸ßš—‹š—¨õõÑŒŒš‘–ŒŠßŒŒš“‹–™ß™™ß˜‘–““–”ß›‘õßÓŒŒš“ß™™‹Œß˜‘–†ßÓ‹‘Šœ›š—ß˜‘–œŠ›šß†ßŒ‹Œœß‹Šœß‹ßŒœš‡šßš“˜¸ß›š“’–ßš—ß‘š—ˆõßš’š‰±ß‘–ßš˜‘—œß™ß›š‹‹–˜ß†›š“ß›—ßš·ßÑ›‘Š¹ß‹‘š’‹Œš‰‘¶ßŒØ‘š›“–—¼õßš—«ß™ßŒŒßš—‹ßŒ–ß›‘ßš†ß‹Œ“ß†›ßß‘–““–’ßÇÑÎÛß™“šŒ’–—ß›–ß†“›š‹šõß‘—·ßš—‹Œ–—¼ß–¬ßÓ‘–““–ßÇÛß›‘Šß—‹ˆßšß‹ß›š‹’–‹ŒºßÅ‹šßß’¹õõßÑ‘–‹…–‘˜ßš—‹ß™ß‹Šõß›šœ™ßš’ßŒ›‘ŒŠ—‹ßššŒß‹ßŒ‹‘ˆß›‘ßÓ˜‘–”’ßŒ–ß‹‘–˜ß—œš‹ß¬ªßš—‹ßŒš–œ‘›‘Š›šßÏÏÏÓÍÎß›œšõš—‹ß—‹–ˆß›š–™Œ–‹Œß‹Ø‘Œ–ß‹Œš‰‘–ßš“˜¸ß•’ßßŒ‘Šß‹—‹ßš˜‘’ß›‘Š™ßš˜›š—ßš–‘–““–ßš—«
+
+
+".rehgih hcum si yralas egareva eht dna ,000,003$
+ ylraen ot detnuoma 1202 ni tebahplA ta yralas aidem ehT .noitasnepmoc eeyolpme
+ evissecxe sserdda ot ytinuroppo eht ekat osla dluohs tnemeganam ,yltnatropmI
+
+ ]...[ .rehtruf og ot deen lliw tnemeganam yletamitlU .2202 fo htworg tnuocdaeh
+ gnorts yrev eht esrever neve ton seod ti tub ,noitcerid thgir eht ni pets a si sboj
+ 000,21 tuc ot noisiced ehT" ,sdda nhoH .iahciP ot rettel tsetal eht ni dias eh ",enola
+ 2202 fo shtnom enin tsrif eht ni dedda erew 000,03 revo hcihw fo ,seeyolpme 000,001 revo
+ gnidda ,tnuocdaeh sti delbuod naht erom sah tebahplA ]tnerap elgooG[ ,sraey evif tsal eht
+ revO" .tnemeganam roines yb nekat noitca citamard erom neve ees ot stnaw won ICT ta nhoH
+
+ .stiforp gniknirhs dna selas gniwols ot eud erusserp rednu won si ti
+ dna ,rebmetpeS fo dne eht ta 000,781 ylraen ot 0202 ni 000,021 morf tnew ecrofkrow
+ s'elgooG .ssenisub gnisol deksir gnirih ton taht srelgooG fo gniteem llah nwot a dlot
+ eh ,yadretseY ".yadot ecaf ew eno eht ot ytilaer cimonoce tnereffid" a rof cimednap eht
+ gnirud ylivaeh derih ti esuaceb detoob eb ot erew seeyolpme sti fo 000,21 taht demrifnoc
+ keew tsal iahciP radnuS tub ,tniop toom a si ton ro dnuF ICT ot denetsil elgooG rehtehW
+
+.ssenisub sseltiforp ffo gnillik dna
+ ,ssel ffats gniyap ,tnuocdaeh gnicuder yb stsoc tuc ot scexe elgooG derolpmi eh nehw
+ rebmevoN ni egnahc rof detatiga ydaerla dah eH .dnuF tnemtsevnI s'nerdlihC
+ ehT fo ssob eht si dna raey tsal yad a noillim 8.1$ flesmih diap yldetroper
+ nhoH rehpotsirhC riS ,noillib 8$ dnuora htrow eb ot detamitsE :troper a morF
+
+ .noitazinagro eht fo tuo
+ decrof erom sdnasuoht ees ot stnaw dna ,gnikam si tnaig hcet SU eht seicnadnuder 000,21 drocer
+eht htiw deifsitas t'nsi rotsevni elgooG rojam a snur taht reganam dnuf egdeh erianoillib ehT
