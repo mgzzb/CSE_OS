@@ -41,9 +41,6 @@ int main(int argc, char *argv[]) {
     // Initialize the status for the process
     int status;
 
-    // Initialize boolean to track when the execution is done
-    bool execDone = false;
-
     // Use the signal function to handle control-C
     signal(SIGINT, handleControlC);
 
@@ -65,82 +62,74 @@ int main(int argc, char *argv[]) {
 
     */
 
-    // While loop runs as long as the execution isn't done
-    while (execDone != true) {
+    // Print message asking for execute and use fgets to store user input from stdin
+    fprintf(stdout, "Execute? ");
+    fgets(userInput, 1024, stdin);
 
-        // Print message asking for execute and use fgets to store user input from stdin
-        fprintf(stdout, "Execute? ");
-        fgets(userInput, 1024, stdin);
+    // Use strcspn function to remove the newline character from the user input
+    userInput[strcspn(userInput, "\n")] = 0;
 
-        // Use strcspn function to remove the newline character from the user input
-        userInput[strcspn(userInput, "\n")] = 0;
+    // Use fork to create a new process
+    rc = fork();
 
-        // Use fork to create a new process
-        rc = fork();
+    // Check if rc is less than zero to check if fork fails
+    if (rc < 0) {
 
-        // Check if rc is less than zero to check if fork fails
-        if (rc < 0) {
+        // Print out the error message and exit
+        fprintf(stderr, "Fork failed\n");
+        exit(EXIT_FAILURE);
 
-            // Print out the error message and exit
-            fprintf(stderr, "Fork failed\n");
-            exit(EXIT_FAILURE);
+    }
 
-        }
-
-        // Check if rc is zero to check child process
-        else if (rc == 0) {
-            
-            // Initialize a char pointer to argv
-            char *argv[512];
-
-            // Initialize the argument count to 0
-            int argc = 0;
-
-            // Initialize a char pointer for the token
-            char *token;
-
-            // Use the strtok function to separate the user input by spaces
-            token = strtok(userInput, " ");
-
-            // While loop to function as long as token is not null
-            while (token != NULL) {
-                
-                // Set the argument vector at the increasing indexes equal to the token
-                argv[argc++] = token;
-
-                // Use the strtok function to separate the token
-                token = strtok(NULL, " ");
-
-            }
-
-            // Set the argument vector at the current argc index to null
-            argv[argc] = NULL;
-
-            // Print the command that's being executed
-            fprintf(stdout, "Executing: %s\n", userInput);
-
-            // Execute the commands using the execvp function
-            execvp(argv[0], argv);
-
-            // Use perror function to check if an error occurs with execvp and exit if that's the case
-            perror("Error");
-            exit(EXIT_FAILURE);
-
-        }
+    // Check if rc is zero to check child process
+    else if (rc == 0) {
         
-        // Check if rc is greater than 0 to check the parent process
-        else {
+        // Initialize a char pointer to argv
+        char *argv[512];
 
-            // Wait for the status
-            wait(&status);
+        // Initialize the argument count to 0
+        int argc = 0;
 
-            // Print when the execution is complete
-            fprintf(stdout, "Execution complete!\n");
+        // Initialize a char pointer for the token
+        char *token;
 
-            // Change the execution done boolean to true
-            execDone = true;
+        // Use the strtok function to separate the user input by spaces
+        token = strtok(userInput, " ");
+
+        // While loop to function as long as token is not null
+        while (token != NULL) {
+            
+            // Set the argument vector at the increasing indexes equal to the token
+            argv[argc++] = token;
+
+            // Use the strtok function to separate the token
+            token = strtok(NULL, " ");
 
         }
+
+        // Set the argument vector at the current argc index to null
+        argv[argc] = NULL;
+
+        // Print the command that's being executed
+        fprintf(stdout, "Executing: %s\n", userInput);
+
+        // Execute the commands using the execvp function
+        execvp(argv[0], argv);
+
+        // Use perror function to check if an error occurs with execvp and exit if that's the case
+        perror("Error");
+        exit(EXIT_FAILURE);
+
+    }
+    
+    // Check if rc is greater than 0 to check the parent process
+    else {
+
+        // Wait for the status
+        wait(&status);
+
+        // Print when the execution is complete
+        fprintf(stdout, "Execution complete!\n");
 
     }
 
