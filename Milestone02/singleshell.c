@@ -19,6 +19,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <sys/wait.h>
 
 // Function to handle control-C gracefully
 void handleControlC(int signal) {
@@ -128,8 +129,13 @@ int main(int argc, char *argv[]) {
         // Wait for the status
         wait(&status);
 
-        // Print when the execution is complete
-        fprintf(stdout, "Execution complete!\n");
+        if(status != EXIT_FAILURE){
+            // Print when the execution is complete
+            fprintf(stdout, "Execution complete!\n");
+        }else{
+            printf("Execution failed\n");
+        }
+
 
     }
 
