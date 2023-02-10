@@ -45,24 +45,6 @@ int main(int argc, char *argv[]) {
     // Use the signal function to handle control-C
     signal(SIGINT, handleControlC);
 
-    /*
-
-    *** DO WE DO THE HANDLING OF CONTROL-C AS WE DID ABOVE, OR SOMETHING
-        LIKE PROF.STRIEGEL DID IN CLASS AS SHOWN BELOW? ***
-
-    struct sigaction new_action, old_action;
-    //Set up the structure to specify the new action.
-    new_action.sa_handler = termination_handler;
-    sigemptyset (&new_action.sa_mask);
-    new_action.sa_flags = 0;
-    sigaction (SIGINT, NULL, &old_action);
-    if (old_action.sa_handler != SIG_IGN)
-    {
-        sigaction (SIGINT, &new_action, NULL);
-    }
-
-    */
-
     // Print message asking for execute and use fgets to store user input from stdin
     fprintf(stdout, "Execute? ");
     fgets(userInput, 1024, stdin);
@@ -135,7 +117,6 @@ int main(int argc, char *argv[]) {
         }else{
             printf("Execution failed\n");
         }
-
 
     }
 
