@@ -18,107 +18,240 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <sys/wait.h>
+#include <sys/types.h>
+#include <ctype.h>
+
 
 // Function to handle control-C gracefully
 void handleControlC(int signal) {
-
+ 
     // Show message saying control-C was pressed and exit gracefully
-    fprintf(stdout, "\nControl-C was pressed .. exiting\n");
+    fprintf(stdout, "\nControl-C was pressed ... exiting\n");
     exit(EXIT_SUCCESS);
 
 }
 
-// Main function
-int main(int argc, char *argv[]) {
-
-    // Initialize user input string
-    char userInput[1024];
-
+void start_call(char *token[]){
     // Initialize process id
     pid_t rc;
-
-    // Initialize the status for the process
-    int status;
-
-    // Use the signal function to handle control-C
-    signal(SIGINT, handleControlC);
-
-    // Print message asking for execute and use fgets to store user input from stdin
-    fprintf(stdout, "Execute? ");
-    fgets(userInput, 1024, stdin);
-
-    // Use strcspn function to remove the newline character from the user input
-    userInput[strcspn(userInput, "\n")] = 0;
-
     // Use fork to create a new process
     rc = fork();
-
     // Check if rc is less than zero to check if fork fails
     if (rc < 0) {
-
         // Print out the error message and exit
-        fprintf(stderr, "Fork failed\n");
-        exit(EXIT_FAILURE);
-
+        printf("ndshell: error forking the process...\n");
+        return;
+    } else if (rc == 0) { // Check if rc is zero to check child process
+        if (execvp(token[0], token) == -1){
+            printf("ndshell: start unsuccesful. killing forked process...\n");
+            kill(getpid(),9);
+        }
+    } else {  // Check if rc is greater than 0 to check the parent process
+        printf("ndshell: process %d started\n", rc);
     }
+}
 
-    // Check if rc is zero to check child process
-    else if (rc == 0) {
-        
-        // Initialize a char pointer to argv
-        char *argv[512];
+void wait_call(){
+  int status;
+  int old_rc = wait(&status);
+  if (old_rc < 0){
+    printf("ndshell: No children\n");
+  }else if (WIFEXITED(status)){
+    printf("ndshell: process %d exited normally with status %d\n",old_rc,WEXITSTATUS(status));
+  }else if (WIFSIGNALED(status)){ 
+    printf("ndshell: process %d exited abnormally with signal %d: %s.\n",old_rc, WTERMSIG(status), strsignal(WTERMSIG(status)));
+  }
+}
 
-        // Initialize the argument count to 0
-        int argc = 0;
+void waitfor_call(int child){
+  int status;
+  int old_rc = waitpid(child, &status, 0);
 
-        // Initialize a char pointer for the token
-        char *token;
+  if (old_rc < 0){
+    printf("ndshell: no such process\n");
+  }else if (WIFEXITED(status)){
+    printf("ndshell: process %d exited normally with status %d\n",old_rc,WEXITSTATUS(status));
+  }else if (WIFSIGNALED(status)){
+    printf("ndshell: process %d exited abnormally with signal %d: %s.\n",old_rc, WTERMSIG(status), strsignal(WTERMSIG(status)));
+  }
+}
 
-        // Use the strtok function to separate the user input by spaces
-        token = strtok(userInput, " ");
+void kill_call(int child) {
+  int parent = getpid();
+  if (child == parent) {
+    printf("ndshell: cannot kill parent process\n");
+    return;
+  }
+  kill(child, 9);
+  waitfor_call(child);
+}
+
+// This signal handler is used to tell bound that it should end
+// because the command used in bound was unsuccesful
+void sighandler() {
+  return;
+}
+
+void bound_call(char *token[]) {
+  char *args[248];
+  int i;
+  for(i = 0; i < 248; i++ ){
+    if(token[i+1]==NULL){
+      args[i]=NULL;
+      break;
+    }
+    args[i] = token[i+1];
+  }
+  int parent = getpid();
+  int child = fork();
+  if (child < 0) {
+    printf("ndshell: error in bound command\n");
+    return;
+  }
+  if (child == 0) {
+    if (execvp(args[0], args) == -1){
+      printf("ndshell: start unsuccesful. command might not exist.\n");
+      printf("ndshell: killing forked process...\n");
+      kill(parent, SIGUSR1);
+      kill(getpid(), 9);
+    }
+  }
+  else {
+    printf("ndshell: process %d started\n", child);
+    signal(SIGCHLD, sighandler);
+    signal(SIGUSR1, sighandler);
+    int s = sleep(atoi(token[0]));
+    kill(child, 9);
+    int status;
+    int rc_prev = waitpid(child, &status, 0);
+    if (s == 0) {
+      printf("ndshell: process %d exceeded the time limit, killing it...\n", rc_prev);
+    }
+    if (WIFEXITED(status)){
+      printf("ndshell: process %d exited normally with status %d\n",rc_prev,WEXITSTATUS(status));
+    }
+    else if (WIFSIGNALED(status)){
+      printf("ndshell: process %d exited abnormally with signal %d: %s.\n",rc_prev, WTERMSIG(status), strsignal(WTERMSIG(status)));
+    }
+  }
+}
+
+void run_call(char *token[]){
+  int rc = fork();
+  if(rc<0){
+    // handle error in forking
+    printf("Error in forking process...\n");
+    return;
+  }
+  if(rc==0){
+    if (execvp(token[0], token) == -1){
+      printf("ndshell: start unsuccesful. command might not exist.\n");
+      printf("ndshell: killing forked process...\n");
+      kill(getpid(),9);
+    }
+  }
+  else{
+    printf("ndshell: process %d started\n", rc);
+    waitfor_call(rc);
+  }
+}
+
+void quit_call(){
+  printf("All child processes complete – exiting the shell.");
+}
+
+
+// Main function
+int main(int argc, char *argv[]) {
+    
+    while(1){
+
+        printf("ndshell>"); // Shell command prompt
+        fflush(stdout);
+        char userInput[1024]; // Initialize user input string
+        fgets(userInput, 1024, stdin);
+
+        if(userInput == NULL){ //use fgets to store user input from stdin
+          printf("Input was NULL, Exiting shell immediately\n"); // if userInput was NULL exit shell
+          break;
+        }
+
+        // Keep track of words in userInput ... Break up the words
+        char *token[250]; 
+        int num_token = 0; // Initialize the count to 0
+        token[num_token] = strtok(userInput, " \t\n");
+        char *args[249]; //define arguments we will pass ignoring first entry
+
+        // if blank line was entered, then accept new command
+        if(token[num_token]==NULL){
+          continue;
+        }
 
         // While loop to function as long as token is not null
-        while (token != NULL) {
-            
-            // Set the argument vector at the increasing indexes equal to the token
-            argv[argc++] = token;
+        while(token[num_token] !=  NULL && num_token < 250){
 
-            // Use the strtok function to separate the token
-            token = strtok(NULL, " ");
-
+          num_token ++; // Set the token vector at the increasing indexes
+          token[num_token] = strtok(0, " \t\n"); // Use the strtok function to separate the token
+          args[num_token - 1] = token[num_token]; // create passing arguments char**
         }
 
-        // Set the argument vector at the current argc index to null
-        argv[argc] = NULL;
+        // Use the signal function to handle control-C
+        signal(SIGINT, handleControlC);
 
-        // Print the command that's being executed
-        fprintf(stdout, "Executing: %s\n", userInput);
-
-        // Execute the commands using the execvp function
-        execvp(argv[0], argv);
-
-        // Use perror function to check if an error occurs with execvp and exit if that's the case
-        perror("Error");
-        exit(EXIT_FAILURE);
-
-    }
-    
-    // Check if rc is greater than 0 to check the parent process
-    else {
-
-        // Wait for the status
-        wait(&status);
-
-        if(status != EXIT_FAILURE){
-            // Print when the execution is complete
-            fprintf(stdout, "Execution complete!\n");
+        int i;
+        int val_check = 0; // check if input for waitfor and kill is integer
+ 
+        // if user_input is exit or quit, exit shell
+        if (strcmp(token[0], "exit") == 0) {
+          printf("Exiting shell immediately\n");
+          break;
+        }else if(strcmp(token[0], "quit") == 0){
+          quit_call();
+          break;
+        }else if(strcmp(token[0], "start")==0){
+          start_call(args);
+        }else if(strcmp(token[0], "wait")==0){
+          wait_call();
+        }else if(strcmp(token[0], "waitfor")==0){
+          for (i = 0; i < strlen(token[1]); i++) {
+            if (isdigit(token[1][i]) == 0) {
+              val_check = 1;
+            }
+          }
+          if ( val_check != 0) {
+            printf("ndshell: waitfor input was not an integer. \n  Usage: waitfor <process_id>\n");
+          }
+          else {
+            waitfor_call(atoi(token[1]));
+          }
+        }else if(strcmp(token[0], "kill")==0){
+          for (i = 0; i < strlen(token[1]); i++) {
+            if (isdigit(token[1][i]) == 0) {
+              val_check = 1;
+            }
+          }
+            if (val_check == 0) {
+              kill_call(atoi(token[1]));
+            }else {
+              printf("ndshell: kill input was not an integer. \n  Usage: kill <process_id>\n");
+            }
+        }else if(strcmp(token[0], "bound")==0){
+          for (i = 0; i < strlen(token[1]); i++) {
+            if (isdigit(token[1][i]) == 0) {
+              val_check = 1;
+            }
+          }
+          if (val_check == 0) {
+            bound_call(args);
+          }else {
+            printf("ndshell: bound input was not an integer. \n  Usage: bound <wait_time> <executable>\n");
+          }
         }else{
-            printf("Execution failed\n");
+          printf("ndshell: unknown command: %s\n",token[0] );
+          continue;
         }
-
+        
     }
 
-    // Exit successfully
-    return EXIT_SUCCESS;
-
+  return 0;
 }
