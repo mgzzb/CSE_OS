@@ -21,14 +21,19 @@
 #include <sys/types.h>
 #include <ctype.h>
 
+pid_t the_PIDS [100] = {0};
+int pidCount = 0;
+
 
 // Function to handle control-C gracefully
 void handleControlC(int signal) {
- 
-    // Show message saying control-C was pressed and exit gracefully
-    fprintf(stdout, "\nControl-C was pressed ... exiting\n");
-    exit(EXIT_SUCCESS);
-
+    int pid = wait(NULL);
+    if (pid>0){
+      kill(pid, signal);
+      // Show message saying control-C was pressed and exit gracefully
+      printf("\nndshell: process %d exited abnormally with signal %d: %s.\n",pid, WTERMSIG(signal), strsignal(WTERMSIG(signal)));      
+      fflush(stdout);
+    }
 }
 
 void start_call(char *token[]){
@@ -48,6 +53,8 @@ void start_call(char *token[]){
         }
     } else {  // Check if rc is greater than 0 to check the parent process
         printf("ndshell: process %d started\n", rc);
+        the_PIDS[pidCount] = rc;
+        pidCount ++;
     }
 }
 
@@ -118,6 +125,8 @@ void bound_call(char *token[]) {
   }
   else {
     printf("ndshell: process %d started\n", child);
+    the_PIDS[pidCount] = child;
+    pidCount ++;
     signal(SIGCHLD, sighandler);
     signal(SIGUSR1, sighandler);
     int s = sleep(atoi(token[0]));
@@ -152,12 +161,24 @@ void run_call(char *token[]){
   }
   else{
     printf("ndshell: process %d started\n", rc);
+    the_PIDS[pidCount] = rc;
+    pidCount ++;
     waitfor_call(rc);
   }
 }
 
 void quit_call(){
-  printf("All child processes complete – exiting the shell.");
+  int i;
+  int status;
+  
+  for(i=0; i<100; i++){
+    if(waitpid(the_PIDS[i], &status, WNOHANG) == 0 ){
+      kill_call(the_PIDS[i]);
+    }
+  }
+
+  printf("All child processes complete – exiting the shell\n");
+  exit(EXIT_SUCCESS);
 }
 
 
