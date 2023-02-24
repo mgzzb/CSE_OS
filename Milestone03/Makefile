@@ -4,8 +4,9 @@ TARGETS = chime
 
 all: $(TARGETS)
 
-chime: chime.c
-	$(CC) $(CFLAGS) -o chime chime.c -lpthread
+chime : chime.c
+	gcc -o chime -Wall --std=c99 chime.c -lpthread
+
 
 clean:
 	rm -rf *.o chime
