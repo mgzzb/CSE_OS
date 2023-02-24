@@ -156,10 +156,12 @@ int main (int argc, char *argv[])
                 adjustTrue = false;
 
             }
+
             // Else to see if chime is out of range and print out error message
             else if (nIndex < 0 || fInterval < 0) {
                 printf("Cannot adjust chime %d, out of range\n", nIndex);
             }
+            
         // Else to see if the command is unknown
         } else {
             printf("Unknown command: %s", szBuffer);
