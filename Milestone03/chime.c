@@ -122,7 +122,6 @@ int main (int argc, char *argv[])
 
             // Check if the user input makes sense and is correct
             if (nParsed == 2 && nIndex >= 0 && nIndex < MAX_THREADS && fInterval > 0.0f) {
-                
                 // If loop to check if the thread has already been allocated
                 if (TheThreads[nIndex].bIsValid) {
 
@@ -134,32 +133,32 @@ int main (int argc, char *argv[])
                     fprintf(stdout, "Adjusting chime %d to have an interval of %f s\n", nIndex, fInterval);
                     adjustTrue = true;
 
+                }else{
+
+                    // Create the new thread and update its index, interval and isValid
+                    TheThreads[nIndex].nIndex = nIndex;
+                    TheThreads[nIndex].fChimeInterval = fInterval;
+                    TheThreads[nIndex].bIsValid = 1;
+                    int threadSuccess = pthread_create(&(TheThreads[nIndex].ThreadID), NULL, ThreadChime, &(TheThreads[nIndex]));
+
+                    // Check if thread was created successfully, if not, print out error message
+                    if (threadSuccess != 0) {
+                        fprintf(stdout, "Error: Thread was not created successfully\n");
+                    }
+
+                    // Check if current chime has been adjusted, if not, print out message that a new thread is starting
+                    if (adjustTrue == false) {
+                        fprintf(stdout, "Starting thread %lu for chime %d, interval of %f s\n", (unsigned long) TheThreads[nIndex].ThreadID, nIndex, fInterval);
+                    }
+
+                    // Update adjust boolean back to false
+                    adjustTrue = false;
+
                 }
-
-                // Create the new thread and update its index, interval and isValid
-                TheThreads[nIndex].nIndex = nIndex;
-                TheThreads[nIndex].fChimeInterval = fInterval;
-                TheThreads[nIndex].bIsValid = 1;
-                int threadSuccess = pthread_create(&(TheThreads[nIndex].ThreadID), NULL, ThreadChime, &(TheThreads[nIndex]));
-
-                // Check if thread was created successfully, if not, print out error message
-                if (threadSuccess != 0) {
-                    fprintf(stdout, "Error: Thread was not created successfully\n");
-                }
-
-                // Check if current chime has been adjusted, if not, print out message that a new thread is starting
-                if (adjustTrue == false) {
-                    fprintf(stdout, "Starting thread %lu for chime %d, interval of %f s\n", (unsigned long) TheThreads[nIndex].ThreadID, nIndex, fInterval);
-                }
-
-                // Update adjust boolean back to false
-                adjustTrue = false;
-
             }
-
             // Else to see if chime is out of range and print out error message
-            else if (nIndex < 0 || fInterval < 0) {
-                printf("Cannot adjust chime %d, out of range\n", nIndex);
+            else if (nIndex < 0 || fInterval < 0 || nIndex > 4) {
+                printf("Cannot adjust chime %d, out of range. Valid index 0-4.\n", nIndex);
             }
             
         // Else to see if the command is unknown
