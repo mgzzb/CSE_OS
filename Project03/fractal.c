@@ -108,7 +108,6 @@ void compute_image_row( void * pData )
 
     struct threadSettings * data = pData;
 
-    /* unpack arguments */
     struct FractalSettings * pSettings = (struct FractalSettings *) data->threadsettings;
     struct bitmap * pBitmap = (struct bitmap *) data->threadbitmap;
     int min = (int) data->start;
@@ -128,7 +127,7 @@ void compute_image_row( void * pData )
 
 			// Convert a iteration number to an RGB color.
 			// (Change this bit to get more interesting colors.)
-			int gray = 255 * iter / pSettings->nMaxIter;
+			int gray = MAKE_RGBA(192, 0, 192, 127) * iter / pSettings->nMaxIter;
 
             // Set the particular pixel to the specific value
 			// Set the pixel in the bitmap.
