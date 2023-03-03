@@ -49,6 +49,17 @@ struct FractalSettings
     int                  nThreads;
 };
 
+struct threadSettings
+{
+    struct FractalSettings * threadsettings;
+    struct bitmap * threadbitmap;
+
+    int start;
+    int stop;
+
+    pthread_t ID;
+
+};
 
 
 

@@ -10,6 +10,7 @@ Starting code for CSE 30341 Project 3 - Spring 2023
 #include <string.h>
 #include <complex.h>
 #include <pthread.h>
+#include <stdbool.h>
 
 #include "bitmap.h"
 #include "fractal.h"
@@ -44,6 +45,24 @@ static int compute_point( double x, double y, int max )
 	return iter;
 }
 
+void helpShow(){
+            printf("Usage: ./fractal [OPTIONS]\n\n");
+            printf("Options:\n");
+            printf("  -help           Display help information\n");
+            printf("  -xmin X         New value for x min, current one is %.1f\n", DEFAULT_MIN_X);
+            printf("  -xmax X         New value for x max, current one is %.1f\n", DEFAULT_MAX_X);
+            printf("  -ymin Y         New value for y min, current one is %.1f\n", DEFAULT_MIN_Y);
+            printf("  -ymax Y         New value for y max, current one is %.1f\n", DEFAULT_MAX_Y);
+            printf("  -maxiter N      New value for the maximum number of iterations (must be an integer), current one is %d\n", DEFAULT_MAX_ITER);
+            printf("  -width W        New width for the output image, current one is %d\n", DEFAULT_PIXEL_WIDTH);
+            printf("  -height H       New height for the output image, current one is %d\n", DEFAULT_PIXEL_HEIGHT);
+            printf("  -output F       New name for the output file, include .bmp at the end\n");
+            printf("  -threads N      Number of threads to use for processing (default: 2)\n");
+            printf("  -row            Run using a row-based approach\n");
+            printf("  -task           Run using a thread-based approach\n");
+            
+}
+
 /*
 Compute an entire image, writing each point to the given bitmap.
 Scale the image to the range (xmin-xmax,ymin-ymax).
@@ -70,7 +89,7 @@ void compute_image_singlethread ( struct FractalSettings * pSettings, struct bit
 
 			// Convert a iteration number to an RGB color.
 			// (Change this bit to get more interesting colors.)
-			int gray = 255 * iter / pSettings->nMaxIter;
+			int gray = MAKE_RGBA(192, 0, 192, 127) * iter / pSettings->nMaxIter;;
 
             // Set the particular pixel to the specific value
 			// Set the pixel in the bitmap.
@@ -79,6 +98,78 @@ void compute_image_singlethread ( struct FractalSettings * pSettings, struct bit
 	}
 }
 
+/*
+    Write your threaded code separately
+*/
+
+void compute_image_row( void * pData )
+{
+	int i,j;
+
+    struct threadSettings * data = pData;
+
+    /* unpack arguments */
+    struct FractalSettings * pSettings = (struct FractalSettings *) data->threadsettings;
+    struct bitmap * pBitmap = (struct bitmap *) data->threadbitmap;
+    int min = (int) data->start;
+    int max = (int) data->stop;
+
+
+    // For every pixel i,j, in the image...
+
+	for(j = min; j < max; j++) {
+		for(i=0; i<pSettings->nPixelWidth; i++) {
+			// Scale from pixels i,j to coordinates x,y
+			double x = pSettings->fMinX + i*(pSettings->fMaxX - pSettings->fMinX) / pSettings->nPixelWidth;
+			double y = pSettings->fMinY + j*(pSettings->fMaxY - pSettings->fMinY) / pSettings->nPixelHeight;
+
+			// Compute the iterations at x,y
+			int iter = compute_point(x,y,pSettings->nMaxIter);
+
+			// Convert a iteration number to an RGB color.
+			// (Change this bit to get more interesting colors.)
+			int gray = 255 * iter / pSettings->nMaxIter;
+
+            // Set the particular pixel to the specific value
+			// Set the pixel in the bitmap.
+			bitmap_set(pBitmap,i,j,gray);
+		}
+	} 
+
+}
+
+/*
+Write your threaded code separately
+
+
+void compute_image_multithread ( struct FractalSettings * pSettings, struct bitmap * pBitmap)
+{
+	int i,j;
+
+	// For every pixel i,j, in the image...
+
+	for(j=0; j<pSettings->nPixelHeight; j++) {
+		for(i=0; i<pSettings->nPixelWidth; i++) {
+
+			// Scale from pixels i,j to coordinates x,y
+			double x = pSettings->fMinX + i*(pSettings->fMaxX - pSettings->fMinX) / pSettings->nPixelWidth;
+			double y = pSettings->fMinY + j*(pSettings->fMaxY - pSettings->fMinY) / pSettings->nPixelHeight;
+
+			// Compute the iterations at x,y
+			int iter = compute_point(x,y,pSettings->nMaxIter);
+
+			// Convert a iteration number to an RGB color.
+			// (Change this bit to get more interesting colors.)
+			int gray = 255 * iter / pSettings->nMaxIter;
+
+            // Set the particular pixel to the specific value
+			// Set the pixel in the bitmap.
+			bitmap_set(pBitmap,i,j,gray);
+		}
+	}
+
+}
+*/
 /* Process all of the arguments as provided as an input and appropriately modify the
    settings for the project 
    @returns 1 if successful, 0 if unsuccessful (bad arguments) */
@@ -110,6 +201,9 @@ int main( int argc, char *argv[] )
     
     strncpy(theSettings.szOutfile, DEFAULT_OUTPUT_FILE, MAX_OUTFILE_NAME_LEN);
 
+    char * newFileName = NULL;
+    bool nameChange = false;
+
     /* TODO: Adapt your code to use arguments where the arguments can be used to override 
              the default values 
 
@@ -131,9 +225,55 @@ int main( int argc, char *argv[] )
         You may also appropriately apply reasonable minimum / maximum values (e.g. minimum image width, etc.)
     */
 
+    // Parse command line arguments
+    for (int i = 1; i < argc; i++) {
+
+        // Check if help argument is used to print out h
+        if (strcmp(argv[i], "-help") == 0) {
+            helpShow();
+            return 0;
+        // Else if to check other different flags
+        } else if (strcmp(argv[i], "-xmin") == 0) {
+            theSettings.fMinX = atof(argv[++i]);
+        } else if (strcmp(argv[i], "-xmax") == 0) {
+            theSettings.fMaxX = atof(argv[++i]);
+        } else if (strcmp(argv[i], "-ymin") == 0) {
+            theSettings.fMinY = atof(argv[++i]);
+        } else if (strcmp(argv[i], "-ymax") == 0) {
+            theSettings.fMaxY = atof(argv[++i]);
+        } else if (strcmp(argv[i], "-maxiter") == 0) {
+            theSettings.nMaxIter = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "-width") == 0) {
+            theSettings.nPixelWidth = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "-height") == 0) {
+            theSettings.nPixelHeight = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "-output") == 0) {
+            newFileName = argv[++i];
+            nameChange = true; 
+        } else if (strcmp(argv[i], "-threads") == 0) {
+            theSettings.nThreads = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "-row") == 0) {
+            theSettings.theMode = MODE_THREAD_ROW;
+        } else if (strcmp(argv[i], "-task") == 0) {
+            theSettings.theMode = MODE_THREAD_TASK;
+        
+        // Else to see if unknown option entered to exit program
+        } else {
+            printf("Unknown option: %s\n", argv[i]);
+            return 1;
+        }
+
+
+
+    }
+
+    // Validate command line arguments and if it fails, then exit
+    if (theSettings.fMinX >= theSettings.fMaxX || theSettings.fMinY >= theSettings.fMaxY || theSettings.nMaxIter <= 0 || theSettings.nPixelWidth <= 0 || theSettings.nPixelHeight <= 0 || theSettings.nThreads <= 0) {
+        fprintf(stderr, "Invalid argument(s)\n");
+        return 1;
+    }
 
    /* Are there any locks to set up? */
-
 
    if(processArguments(argc, argv, &theSettings))
    {
@@ -144,16 +284,25 @@ int main( int argc, char *argv[] )
             struct bitmap * pBitmap = bitmap_create(theSettings.nPixelWidth, theSettings.nPixelHeight);
 
             /* Fill the bitmap with dark blue */
-            bitmap_reset(pBitmap,MAKE_RGBA(0,0,255,0));
+            bitmap_reset(pBitmap,MAKE_RGBA(0, 0, 0, 255));
 
             /* Compute the image */
             compute_image_singlethread(&theSettings, pBitmap);
 
             // Save the image in the stated file.
-            if(!bitmap_save(pBitmap,theSettings.szOutfile)) {
-                fprintf(stderr,"fractal: couldn't write to %s: %s\n",theSettings.szOutfile,strerror(errno));
-                return 1;
-            }            
+            if(nameChange){
+                if(!bitmap_save(pBitmap,newFileName)) {
+                    fprintf(stderr,"fractal: couldn't write to %s: %s\n",newFileName,strerror(errno));
+                    return 1;
+                }
+            }
+            else{
+                if(!bitmap_save(pBitmap,theSettings.szOutfile)) {
+                    fprintf(stderr,"fractal: couldn't write to %s: %s\n",theSettings.szOutfile,strerror(errno));
+                    return 1;
+                } 
+            }
+                       
         }
         else if(theSettings.theMode == MODE_THREAD_ROW)
         {
@@ -161,6 +310,60 @@ int main( int argc, char *argv[] )
 
             /* Could you send an argument and write a different version of compute_image that works off of a
                certain parameter setting for the rows to iterate upon? */
+
+            /* Create a bitmap of the appropriate size */
+            struct bitmap * pBitmap = bitmap_create(theSettings.nPixelWidth, theSettings.nPixelHeight);
+
+            /* Fill the bitmap with dark blue */
+            bitmap_reset(pBitmap,MAKE_RGBA(0, 0, 0, 255));
+
+            int numThreads = theSettings.nThreads;
+
+            struct threadSettings threadArgs[numThreads];
+            int end = theSettings.nPixelHeight / numThreads;
+            threadArgs[0].start = 0;
+            threadArgs[0].stop = end;
+
+            for (int i = 0; i < numThreads; i++) {
+
+                threadArgs[i].threadsettings = &theSettings;
+                threadArgs[i].threadbitmap = pBitmap;
+
+                /* Compute the image if error was not found */
+                if (pthread_create(&threadArgs[i].ID, NULL, (void *) *compute_image_row, &threadArgs[i]) != 0) {
+                    printf("Error with pthread_create().\n");
+                    exit(1);
+                }
+
+                if (i+1 < numThreads) {
+                    threadArgs[i+1].start = threadArgs[i].stop;
+                    threadArgs[i+1].stop = end + threadArgs[i].stop;
+                }
+            }
+
+
+            // Error Handeling
+            for (int i = 0; i < numThreads; i++) {
+                if (pthread_join(threadArgs[i].ID, NULL) != 0) {
+                    printf("Error with pthread_join().\n");
+                    exit(1);
+                }
+            }
+
+            /* Save the image in the stated file */
+            if(nameChange){
+                if(!bitmap_save(pBitmap,newFileName)) {
+                    fprintf(stderr,"fractal: couldn't write to %s: %s\n",newFileName,strerror(errno));
+                    return 1;
+                }
+            }
+            else{
+                if(!bitmap_save(pBitmap,theSettings.szOutfile)) {
+                    fprintf(stderr,"fractal: couldn't write to %s: %s\n",theSettings.szOutfile,strerror(errno));
+                    return 1;
+                } 
+            }
+
         }
         else if(theSettings.theMode == MODE_THREAD_TASK)
         {
@@ -181,11 +384,14 @@ int main( int argc, char *argv[] )
         else 
         {
             /* Uh oh - how did we get here? */
+            printf("fractal: ERROR with mode - Wanting to run using an unknown approach\n");
+            return 1;
         }
    }
    else
    {
         /* Probably a great place to dump the help */
+        helpShow();
 
         /* Probably a good place to bail out */
         exit(-1);
