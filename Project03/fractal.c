@@ -137,38 +137,7 @@ void compute_image_row( void * pData )
 
 }
 
-/*
-Write your threaded code separately
 
-
-void compute_image_multithread ( struct FractalSettings * pSettings, struct bitmap * pBitmap)
-{
-	int i,j;
-
-	// For every pixel i,j, in the image...
-
-	for(j=0; j<pSettings->nPixelHeight; j++) {
-		for(i=0; i<pSettings->nPixelWidth; i++) {
-
-			// Scale from pixels i,j to coordinates x,y
-			double x = pSettings->fMinX + i*(pSettings->fMaxX - pSettings->fMinX) / pSettings->nPixelWidth;
-			double y = pSettings->fMinY + j*(pSettings->fMaxY - pSettings->fMinY) / pSettings->nPixelHeight;
-
-			// Compute the iterations at x,y
-			int iter = compute_point(x,y,pSettings->nMaxIter);
-
-			// Convert a iteration number to an RGB color.
-			// (Change this bit to get more interesting colors.)
-			int gray = 255 * iter / pSettings->nMaxIter;
-
-            // Set the particular pixel to the specific value
-			// Set the pixel in the bitmap.
-			bitmap_set(pBitmap,i,j,gray);
-		}
-	}
-
-}
-*/
 /* Process all of the arguments as provided as an input and appropriately modify the
    settings for the project 
    @returns 1 if successful, 0 if unsuccessful (bad arguments) */
@@ -233,23 +202,59 @@ int main( int argc, char *argv[] )
             return 0;
         // Else if to check other different flags
         } else if (strcmp(argv[i], "-xmin") == 0) {
+            if (i+1 >= argc) {
+                printf("Error: -xmin requires a value\n");
+                return 1;
+            } 
             theSettings.fMinX = atof(argv[++i]);
         } else if (strcmp(argv[i], "-xmax") == 0) {
+            if (i+1 >= argc) {
+                printf("Error: -xmax requires a value\n");
+                return 1;
+            } 
             theSettings.fMaxX = atof(argv[++i]);
         } else if (strcmp(argv[i], "-ymin") == 0) {
+            if (i+1 >= argc) {
+                printf("Error: -ymin requires a value\n");
+                return 1;
+            } 
             theSettings.fMinY = atof(argv[++i]);
         } else if (strcmp(argv[i], "-ymax") == 0) {
+            if (i+1 >= argc) {
+                printf("Error: -ymax requires a value\n");
+                return 1;
+            } 
             theSettings.fMaxY = atof(argv[++i]);
         } else if (strcmp(argv[i], "-maxiter") == 0) {
+            if (i+1 >= argc) {
+                printf("Error: -maxiter requires a value\n");
+                return 1;
+            } 
             theSettings.nMaxIter = atoi(argv[++i]);
         } else if (strcmp(argv[i], "-width") == 0) {
+            if (i+1 >= argc) {
+                printf("Error: -width requires a value\n");
+                return 1;
+            } 
             theSettings.nPixelWidth = atoi(argv[++i]);
         } else if (strcmp(argv[i], "-height") == 0) {
+            if (i+1 >= argc) {
+                printf("Error: -height requires a value\n");
+                return 1;
+            } 
             theSettings.nPixelHeight = atoi(argv[++i]);
         } else if (strcmp(argv[i], "-output") == 0) {
+            if (i+1 >= argc) {
+                printf("Error: -output requires a file name\n");
+                return 1;
+            } 
             newFileName = argv[++i];
             nameChange = true; 
         } else if (strcmp(argv[i], "-threads") == 0) {
+            if (i+1 >= argc) {
+                printf("Error: -threads requires a value\n");
+                return 1;
+            } 
             theSettings.nThreads = atoi(argv[++i]);
         } else if (strcmp(argv[i], "-row") == 0) {
             theSettings.theMode = MODE_THREAD_ROW;
@@ -339,7 +344,6 @@ int main( int argc, char *argv[] )
                     threadArgs[i+1].stop = end + threadArgs[i].stop;
                 }
             }
-
 
             // Error Handeling
             for (int i = 0; i < numThreads; i++) {
