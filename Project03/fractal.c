@@ -45,6 +45,7 @@ static int compute_point( double x, double y, int max )
 	return iter;
 }
 
+// Function to show the help options
 void helpShow(){
             printf("Usage: ./fractal [OPTIONS]\n\n");
             printf("Options:\n");
@@ -59,8 +60,7 @@ void helpShow(){
             printf("  -output F       New name for the output file, include .bmp at the end\n");
             printf("  -threads N      Number of threads to use for processing (default: 2)\n");
             printf("  -row            Run using a row-based approach\n");
-            printf("  -task           Run using a thread-based approach\n");
-            
+            printf("  -task           Run using a thread-based approach\n");          
 }
 
 /*
@@ -71,6 +71,7 @@ HINT: Generally, you will want to leave this code alone and write your threaded 
 
 */
 
+// Function to compute the image using a single thread
 void compute_image_singlethread ( struct FractalSettings * pSettings, struct bitmap * pBitmap)
 {
 	int i,j;
@@ -78,6 +79,7 @@ void compute_image_singlethread ( struct FractalSettings * pSettings, struct bit
 	// For every pixel i,j, in the image...
 
 	for(j=0; j<pSettings->nPixelHeight; j++) {
+
 		for(i=0; i<pSettings->nPixelWidth; i++) {
 
 			// Scale from pixels i,j to coordinates x,y
@@ -94,6 +96,7 @@ void compute_image_singlethread ( struct FractalSettings * pSettings, struct bit
             // Set the particular pixel to the specific value
 			// Set the pixel in the bitmap.
 			bitmap_set(pBitmap,i,j,gray);
+
 		}
 	}
 }
@@ -102,10 +105,42 @@ void compute_image_singlethread ( struct FractalSettings * pSettings, struct bit
     Write your threaded code separately
 */
 
+// Initialize a counter to be used by the lock
+int counter;
+
+// Initialize the lock
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+
+// Initializing a struct that contains the info for each thread
+typedef struct {
+
+  int row;
+  pthread_t tid;
+  struct FractalSettings * pSettings;
+  struct bitmap * pBitmap;
+
+} threadArgument;
+
+// Initializing a struct that contains the info for each task
+typedef struct {
+
+  int startX, startY, stopX, stopY;
+  pthread_t tid;
+  struct FractalSettings * pSettings;
+  struct bitmap * pBitmap;
+  
+} taskInfo;
+
+// Initialize the array of tasks
+taskInfo tasksArray[100000];
+
+// Function to compute the image using multi-threading via rows
 void compute_image_row( void * pData )
 {
+
 	int i,j;
 
+    // Use the struct to get the thread settings
     struct threadSettings * data = pData;
 
     struct FractalSettings * pSettings = (struct FractalSettings *) data->threadsettings;
@@ -117,7 +152,9 @@ void compute_image_row( void * pData )
     // For every pixel i,j, in the image...
 
 	for(j = min; j < max; j++) {
+
 		for(i=0; i<pSettings->nPixelWidth; i++) {
+
 			// Scale from pixels i,j to coordinates x,y
 			double x = pSettings->fMinX + i*(pSettings->fMaxX - pSettings->fMinX) / pSettings->nPixelWidth;
 			double y = pSettings->fMinY + j*(pSettings->fMaxY - pSettings->fMinY) / pSettings->nPixelHeight;
@@ -132,11 +169,69 @@ void compute_image_row( void * pData )
             // Set the particular pixel to the specific value
 			// Set the pixel in the bitmap.
 			bitmap_set(pBitmap,i,j,gray);
+
 		}
 	} 
 
 }
 
+// Function to compute the image using task-based execution
+void *compute_image_task ( void * pData )
+{
+    // Use the struct to get necessary task information
+    taskInfo * args = (taskInfo *) pData;
+
+	int i, j, tempVal;
+
+    // While loop to lock the mutex and update the counter
+    while (1) {
+
+        // Lock the mutex
+        pthread_mutex_lock(&lock);
+        
+        // Check if counter is greater than or equal to 0 to update tempVal and counter
+        if (counter >= 0) {
+            tempVal = counter;
+            counter--;
+        }
+    // Else to unlock thread if counter is negative and return null
+    else {
+
+        pthread_mutex_unlock(&lock);
+        return NULL;
+
+    }
+
+    // Unlock the mutex
+    pthread_mutex_unlock(&lock);
+      
+  	// For every pixel i,j, in the image...
+    
+  	for (j = tasksArray[tempVal].startY; j < tasksArray[tempVal].stopY; j++) {
+  		for (i = tasksArray[tempVal].startX; i < tasksArray[tempVal].stopX; i++) {
+        
+  			// Scale from pixels i,j to coordinates x,y
+  			double x = args->pSettings->fMinX + i*(args->pSettings->fMaxX - args->pSettings->fMinX) / args->pSettings->nPixelWidth;
+  			double y = args->pSettings->fMinY + j*(args->pSettings->fMaxY - args->pSettings->fMinY) / args->pSettings->nPixelHeight;
+  
+  			// Compute the iterations at x,y
+  			int iter = compute_point(x,y,args->pSettings->nMaxIter);
+  
+  			// Convert a iteration number to an RGB color.
+  			// (Change this bit to get more interesting colors.)
+  			int gray = 255 * iter / args->pSettings->nMaxIter;
+  
+              // Set the particular pixel to the specific value
+  			// Set the pixel in the bitmap.
+  			bitmap_set(args->pBitmap,i,j,gray);
+
+  		}
+  	}
+  }
+
+  return NULL;
+
+}
 
 /* Process all of the arguments as provided as an input and appropriately modify the
    settings for the project 
@@ -146,9 +241,6 @@ char processArguments (int argc, char * argv[], struct FractalSettings * pSettin
     /* If we don't process anything, it must be successful, right? */
     return 1;
 }
-
-
-
 
 int main( int argc, char *argv[] )
 {
@@ -200,7 +292,7 @@ int main( int argc, char *argv[] )
         if (strcmp(argv[i], "-help") == 0) {
             helpShow();
             return 0;
-        // Else if to check other different flags
+        // Else if to check other different flags and adjust values
         } else if (strcmp(argv[i], "-xmin") == 0) {
             if (i+1 >= argc) {
                 printf("Error: -xmin requires a value\n");
@@ -266,8 +358,6 @@ int main( int argc, char *argv[] )
             printf("Unknown option: %s\n", argv[i]);
             return 1;
         }
-
-
 
     }
 
@@ -345,7 +435,7 @@ int main( int argc, char *argv[] )
                 }
             }
 
-            // Error Handeling
+            // Error Handling
             for (int i = 0; i < numThreads; i++) {
                 if (pthread_join(threadArgs[i].ID, NULL) != 0) {
                     printf("Error with pthread_join().\n");
@@ -383,6 +473,54 @@ int main( int argc, char *argv[] )
                the tasks at the outset. Hence, it is OK whenever a thread needs something to do to try to access
                that shared data structure with all of the respective tasks.  
                */
+
+            /* Create a bitmap of the appropriate size */
+            struct bitmap * pBitmap = bitmap_create(theSettings.nPixelWidth, theSettings.nPixelHeight);
+
+            /* Fill the bitmap with dark blue */
+            bitmap_reset(pBitmap,MAKE_RGBA(0,0,255,0));
+
+            /* Compute the image */
+            int i, j, taskWidth = 20, taskHeight = 20, count = 0;
+            threadArgument threadArguments[10];
+          
+            // Initialize the tasks array
+            for (i = 0; i < theSettings.nPixelHeight; i += taskHeight) {
+                for (j = 0; j < theSettings.nPixelWidth; j += taskWidth) {
+                    tasksArray[count].startY = i;
+                    tasksArray[count].startX = j;
+                    tasksArray[count].stopY = i+(taskHeight);
+                    tasksArray[count].stopX = j+(taskWidth);
+                    tasksArray[count].pSettings = &theSettings;
+                    tasksArray[count].pBitmap = pBitmap;
+                    count++;
+                }
+            }
+
+            // Update the counter
+            counter = count;
+
+            // For loop to create the threads for the tasks
+            for (i = 0; i < theSettings.nThreads; i++) {
+                pthread_create(&(threadArguments[i].tid), NULL, compute_image_task, (void *) &tasksArray[0]);
+            }
+
+            // For loop to join the task threads
+            for (i = 0; i < theSettings.nThreads; i++) {
+                pthread_join(threadArguments[i].tid, NULL);
+            }
+          
+            // Save the image in the stated file.
+            if (!bitmap_save(pBitmap,theSettings.szOutfile)) {
+
+                fprintf(stderr,"fractal: couldn't write to %s: %s\n",theSettings.szOutfile,strerror(errno));
+
+                // Free malloc and return 1
+                bitmap_delete(pBitmap);
+                return 1;
+
+            }
+
         }
         else 
         {
@@ -403,4 +541,5 @@ int main( int argc, char *argv[] )
     /* TODO: Do any cleanup as required */
 
 	return 0;
+    
 }
