@@ -219,7 +219,7 @@ void *compute_image_task ( void * pData )
   
   			// Convert a iteration number to an RGB color.
   			// (Change this bit to get more interesting colors.)
-  			int gray = 255 * iter / args->pSettings->nMaxIter;
+  			int gray = MAKE_RGBA(192, 0, 192, 127) * iter / args->pSettings->nMaxIter;
   
               // Set the particular pixel to the specific value
   			// Set the pixel in the bitmap.
